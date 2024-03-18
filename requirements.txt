@@ -14,3 +14,5 @@ torchtext
 sentencepiece
 psycopg2-binary
 ipdb
+pyarrow
+nltk
