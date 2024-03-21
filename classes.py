@@ -1,6 +1,6 @@
-#%%
 import torch
 import torch.nn as nn
+import pickle
 
 #%%
 #Analogue of the nn.RNN module
@@ -84,26 +84,49 @@ class fullRNN(nn.Module):
         self.hidden_size=hidden_size
         self.rnn_cell=nn.RNN(input_size, hidden_size)
         self.output_layer=nn.Linear(hidden_size, output_size)
+
     def forward(self, ordered_text):
         '''
         This functions defines forward prop through our RNN network.
         The input is a tensor of shape (seq_length, batch_size, input_size)
         The seq_length is number of examples
         '''
-        batch_size=ordered_text.size(1)
-        hidden=self.init_hidden(batch_size)
+        #Initiates the hidden layer for the whole text
+        hidden=torch.zeros(1, ordered_text.size(1), self.hidden_size)
         rnn_output, hidden = self.rnn_cell(ordered_text, hidden)
         output=self.output_layer(rnn_output[-1, :, :])
         return output
-    def init_hidden(self, batch_size):
-        '''
-        Initiates the hidden layer for the whole text
-        (the number of words/tokens is batch_size) at once
-        '''
-        return torch.zeros(1, batch_size, self.hidden_size)
-        
-    
 
+
+input_size = 100
+hidden_size = 100
+output_size = 100
+
+# Step 1 - Create RNN for Query Tower + for Doc tower 
+queryRNN = fullRNN(input_size, hidden_size, output_size)
+
+# Step 2 - Load input data - pickle files have been tokenised by sentence piece and embedded by
+
+testData = []
+trainingData = []
+validationData = []
+
+with open('tokenised_triplets/test.pkl', 'rb') as file:
+    testData = pickle.load(file)
+with open('tokenised_triplets/training.pkl', 'rb') as file:
+    trainingData = pickle.load(file)
+with open('tokenised_triplets/validation.pkl', 'rb') as file:
+    validationData = pickle.load(file)
+
+print(testData)
+
+# Step 3 - Pass data into model 
+
+# Step 4 - Evaluate loss function 
+
+
+    
+    
 # # # %%
 # #TEST
 # # Example parameters
